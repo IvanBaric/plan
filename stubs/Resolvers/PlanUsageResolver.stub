@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Resolvers;
+
+use Illuminate\Database\Eloquent\Model;
+use IvanBaric\Plans\Contracts\PlanUsageResolver as PlanUsageResolverContract;
+use IvanBaric\Plans\Data\UsagePeriod;
+use IvanBaric\Plans\Models\PlanKey;
+
+final readonly class PlanUsageResolver implements PlanUsageResolverContract
+{
+    public function used(Model $owner, PlanKey $key, ?UsagePeriod $period = null): int
+    {
+        return match ($key->key) {
+            // Replace these examples with application model counts.
+            'menus',
+            'items',
+            'languages',
+            'images',
+            'emails.monthly' => 0,
+            default => 0,
+        };
+    }
+}

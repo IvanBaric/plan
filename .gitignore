@@ -1,0 +1,5 @@
+/vendor/
+/.phpunit.result.cache
+/coverage/
+/.pest.cache
+.DS_Store

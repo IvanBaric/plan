@@ -1,0 +1,50 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Resolvers;
+
+use IvanBaric\Plans\Contracts\BillingResolver as BillingResolverContract;
+use IvanBaric\Plans\Models\SubscriptionPlan;
+
+final readonly class BillingResolver implements BillingResolverContract
+{
+    public function __construct(
+        private CurrentTeamResolver $currentTeamResolver,
+    ) {}
+
+    public function plan(): ?SubscriptionPlan
+    {
+        $team = $this->currentTeamResolver->current();
+
+        if (! method_exists($team, 'subscription')) {
+            return null;
+        }
+
+        return $team->subscription()
+            ->with('plan')
+            ->first()
+            ?->plan;
+    }
+
+    public function status(): string
+    {
+        $team = $this->currentTeamResolver->current();
+
+        if (! method_exists($team, 'subscription')) {
+            return 'none';
+        }
+
+        return (string) ($team->subscription()->value('status') ?? 'none');
+    }
+
+    public function canAccessApplication(): bool
+    {
+        return (bool) config("plans.access.statuses.{$this->status()}.can_access_application", false);
+    }
+
+    public function canPerformWriteActions(): bool
+    {
+        return (bool) config("plans.access.statuses.{$this->status()}.can_perform_write_actions", false);
+    }
+}

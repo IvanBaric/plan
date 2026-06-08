@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Resolvers;
+
+use Illuminate\Database\Eloquent\Model;
+use IvanBaric\Plans\Contracts\CurrentTeamResolver as CurrentTeamResolverContract;
+use RuntimeException;
+
+final readonly class CurrentTeamResolver implements CurrentTeamResolverContract
+{
+    public function current(): Model
+    {
+        $team = auth()->user()?->currentTeam;
+
+        if (! $team instanceof Model) {
+            throw new RuntimeException(__('plans::messages.current_team_not_resolved'));
+        }
+
+        return $team;
+    }
+}

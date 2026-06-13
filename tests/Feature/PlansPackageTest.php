@@ -74,6 +74,157 @@ final class PlansPackageTest extends TestCase
         $this->assertSame(24, PlanEntitlement::query()->count());
     }
 
+    public function test_plans_safe_sync_creates_new_config_records(): void
+    {
+        Artisan::call('plans:sync');
+
+        $keys = config('plans.keys');
+        $plans = config('plans.plans');
+
+        $keys['uploads.monthly'] = [
+            'name_key' => 'plans::keys.uploads_monthly.name',
+            'description_key' => 'plans::keys.uploads_monthly.description',
+            'type' => 'metered',
+            'period' => 'monthly',
+            'is_active' => true,
+        ];
+
+        $plans['starter']['entitlements']['uploads.monthly'] = 50;
+
+        config([
+            'plans.keys' => $keys,
+            'plans.plans' => $plans,
+        ]);
+
+        Artisan::call('plans:sync');
+
+        $key = PlanKey::query()
+            ->where('key', 'uploads.monthly')
+            ->firstOrFail();
+        $starter = $this->plan('starter');
+
+        $this->assertSame('metered', $key->type);
+        $this->assertSame('50', PlanEntitlement::query()
+            ->where('plan_id', $starter->getKey())
+            ->where('plan_key_id', $key->getKey())
+            ->value('value'));
+    }
+
+    public function test_plans_safe_sync_does_not_overwrite_manual_runtime_changes(): void
+    {
+        Artisan::call('plans:sync');
+
+        $starter = $this->plan('starter');
+        $starter->forceFill([
+            'name_key' => 'manual.plan.name',
+            'is_public' => false,
+            'prices' => [
+                'monthly' => [
+                    'amount' => 123,
+                    'currency' => 'EUR',
+                ],
+            ],
+        ])->save();
+
+        $menus = PlanKey::query()->where('key', 'menus')->firstOrFail();
+        PlanEntitlement::query()
+            ->where('plan_id', $starter->getKey())
+            ->where('plan_key_id', $menus->getKey())
+            ->update(['value' => '999']);
+
+        $plans = config('plans.plans');
+        $plans['starter']['name_key'] = 'config.plan.name';
+        $plans['starter']['is_public'] = true;
+        $plans['starter']['prices'] = [
+            'monthly' => [
+                'amount' => 321,
+                'currency' => 'EUR',
+            ],
+        ];
+        $plans['starter']['entitlements']['menus'] = 42;
+
+        config(['plans.plans' => $plans]);
+
+        Artisan::call('plans:sync');
+
+        $starter->refresh();
+
+        $this->assertSame('manual.plan.name', $starter->name_key);
+        $this->assertFalse($starter->is_public);
+        $this->assertSame(123, $starter->prices['monthly']['amount']);
+        $this->assertSame('999', PlanEntitlement::query()
+            ->where('plan_id', $starter->getKey())
+            ->where('plan_key_id', $menus->getKey())
+            ->value('value'));
+    }
+
+    public function test_plans_force_sync_overwrites_runtime_changes_from_config(): void
+    {
+        Artisan::call('plans:sync');
+
+        $starter = $this->plan('starter');
+        $starter->forceFill([
+            'name_key' => 'manual.plan.name',
+            'is_public' => false,
+            'prices' => [
+                'monthly' => [
+                    'amount' => 123,
+                    'currency' => 'EUR',
+                ],
+            ],
+        ])->save();
+
+        $menus = PlanKey::query()->where('key', 'menus')->firstOrFail();
+        PlanEntitlement::query()
+            ->where('plan_id', $starter->getKey())
+            ->where('plan_key_id', $menus->getKey())
+            ->update(['value' => '999']);
+
+        $plans = config('plans.plans');
+        $plans['starter']['name_key'] = 'config.plan.name';
+        $plans['starter']['is_public'] = true;
+        $plans['starter']['prices'] = [
+            'monthly' => [
+                'amount' => 321,
+                'currency' => 'EUR',
+            ],
+        ];
+        $plans['starter']['entitlements']['menus'] = 42;
+
+        config(['plans.plans' => $plans]);
+
+        Artisan::call('plans:sync', ['--force' => true]);
+
+        $starter->refresh();
+
+        $this->assertSame('config.plan.name', $starter->name_key);
+        $this->assertTrue($starter->is_public);
+        $this->assertSame(321, $starter->prices['monthly']['amount']);
+        $this->assertSame('42', PlanEntitlement::query()
+            ->where('plan_id', $starter->getKey())
+            ->where('plan_key_id', $menus->getKey())
+            ->value('value'));
+    }
+
+    public function test_plan_key_identifier_remains_stable_during_force_sync(): void
+    {
+        Artisan::call('plans:sync');
+
+        $menus = PlanKey::query()->where('key', 'menus')->firstOrFail();
+        $keys = config('plans.keys');
+        $keys['menus']['name_key'] = 'plans::keys.changed_menus.name';
+
+        config(['plans.keys' => $keys]);
+
+        Artisan::call('plans:sync', ['--force' => true]);
+
+        $menus->refresh();
+
+        $this->assertSame('menus', $menus->key);
+        $this->assertSame('plans::keys.changed_menus.name', $menus->name_key);
+        $this->assertSame(1, PlanKey::query()->where('key', 'menus')->count());
+    }
+
     public function test_plans_sync_can_deactivate_missing_keys_and_plans(): void
     {
         Artisan::call('plans:sync');
@@ -90,7 +241,10 @@ final class PlansPackageTest extends TestCase
             ],
         ]);
 
-        Artisan::call('plans:sync', ['--deactivate-missing' => true]);
+        Artisan::call('plans:sync', [
+            '--deactivate-missing' => true,
+            '--force' => true,
+        ]);
 
         $this->assertTrue((bool) PlanKey::query()->where('key', 'menus')->value('is_active'));
         $this->assertFalse((bool) PlanKey::query()->where('key', 'items')->value('is_active'));

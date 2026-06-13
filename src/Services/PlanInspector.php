@@ -95,6 +95,14 @@ final readonly class PlanInspector
                 );
         }
 
+        if ($planKey->type === 'value') {
+            return PlanResult::allow(
+                key: $planKey->key,
+                type: $planKey->type,
+                value: $entitlement->value,
+            );
+        }
+
         $used = $this->usageFor($planKey);
 
         if ($this->isUnlimited($entitlement->value)) {

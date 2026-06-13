@@ -11,6 +11,8 @@ return [
     'entitlement_not_available' => 'Ova mogućnost nije dostupna u vašem planu.',
     'boolean_denied' => 'Ova mogućnost nije uključena u vaš plan.',
     'limit_reached' => 'Dosegnuli ste limit :used/:limit.',
+    'limit_exceeded' => 'Dosegnut je limit za :feature (:used/:limit).',
+    'feature_not_available' => ':feature nije dostupno na trenutnom planu.',
     'unlimited' => 'Neograničeno',
     'unknown_entitlement_key' => 'Plan entitlement key [:key] nije registriran u plans.keys configu.',
     'current_team_not_resolved' => 'Current team nije postavljen.',

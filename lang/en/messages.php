@@ -11,6 +11,8 @@ return [
     'entitlement_not_available' => 'This feature is not available in your plan.',
     'boolean_denied' => 'This feature is not included in your plan.',
     'limit_reached' => 'You have reached the limit :used/:limit.',
+    'limit_exceeded' => ':feature limit reached (:used/:limit).',
+    'feature_not_available' => ':feature is not available on your current plan.',
     'unlimited' => 'Unlimited',
     'unknown_entitlement_key' => 'Plan entitlement key [:key] is not registered in plans.keys config.',
     'current_team_not_resolved' => 'Current team is not set.',

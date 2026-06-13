@@ -49,7 +49,9 @@ final class InstallPlansCommand extends Command
             || ((bool) config('plans.sync.sync_definitions_on_install', true) && (bool) $this->option('migrate'));
 
         if ($shouldSync) {
-            $this->call('plans:sync');
+            $this->call('plans:sync', [
+                '--force' => $force,
+            ]);
         }
 
         $this->components->info(__('plans::messages.install_finished'));

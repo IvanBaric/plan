@@ -81,10 +81,18 @@ __('plans::plans.pro.description');
 php artisan plans:sync
 ```
 
+Default sync is production-safe: it creates missing plan records, keys and entitlements, but does not overwrite existing runtime values.
+
+Overwrite existing definitions from config explicitly:
+
+```bash
+php artisan plans:sync --force
+```
+
 Deactivate plans and keys that no longer exist in config:
 
 ```bash
-php artisan plans:sync --deactivate-missing
+php artisan plans:sync --deactivate-missing --force
 ```
 
 `plans:sync` fills:

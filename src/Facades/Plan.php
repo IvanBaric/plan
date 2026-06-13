@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static int percentage(string $key, ?string $mode = null)
  * @method static \IvanBaric\Plans\Data\PlanResult sync(string $key)
  * @method static \Illuminate\Support\Collection syncAll()
- * @method static void syncDefinitions(bool $deactivateMissing = false)
+ * @method static array{created: int, updated: int, skipped: int} syncDefinitions(bool $deactivateMissing = false, ?bool $overwriteExisting = null)
  */
 final class Plan extends Facade
 {

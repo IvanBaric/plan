@@ -32,6 +32,18 @@ return [
         'usage' => App\Resolvers\PlanUsageResolver::class,
     ],
 
+    'billing' => [
+        'plan_column' => 'plan_code',
+        'resolver' => IvanBaric\Plans\Services\DefaultCurrentPlanResolver::class,
+    ],
+
+    'usage' => [
+        'relationships' => [
+            'public_qr_menus' => 'qrMenus',
+            'memberships' => 'memberships',
+        ],
+    ],
+
     'access' => [
         'default_inspection_mode' => 'write',
 
@@ -69,6 +81,7 @@ return [
     ],
 
     'sync' => [
+        'overwrite_existing' => false,
         'sync_on_inspect' => true,
         'store_synced_usage' => true,
         'sync_boolean_keys' => false,
@@ -84,6 +97,14 @@ return [
         'enabled' => false,
         'prefix' => 'ivanbaric_plans',
         'ttl_seconds' => 0,
+    ],
+
+    'admin' => [
+        'enabled' => true,
+        'route_prefix' => 'admin/plans',
+        'route_name_prefix' => 'admin.plans.',
+        'middleware' => ['web', 'auth', 'admin_locale', 'is_superadmin'],
+        'layout' => 'components.layouts.app',
     ],
 
     'translation' => [
@@ -123,6 +144,11 @@ return [
         'metered' => [
             'uses_usage' => true,
             'periodic' => true,
+        ],
+
+        'value' => [
+            'uses_usage' => false,
+            'periodic' => false,
         ],
     ],
 

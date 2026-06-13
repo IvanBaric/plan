@@ -9,7 +9,9 @@ use IvanBaric\Plans\Services\PlanDefinitionSynchronizer;
 
 final class SyncPlansCommand extends Command
 {
-    protected $signature = 'plans:sync {--deactivate-missing}';
+    protected $signature = 'plans:sync
+        {--deactivate-missing : Deactivate keys and plans missing from config when overwriting is enabled.}
+        {--force : Overwrite existing plans, keys and entitlements from configuration.}';
 
     public function __construct()
     {
@@ -20,10 +22,14 @@ final class SyncPlansCommand extends Command
 
     public function handle(PlanDefinitionSynchronizer $synchronizer): int
     {
-        $synchronizer->sync(
+        $result = $synchronizer->sync(
             deactivateMissing: (bool) $this->option('deactivate-missing'),
+            overwriteExisting: (bool) $this->option('force') || (bool) config('plans.sync.overwrite_existing', false),
         );
 
+        $this->components->info("created: {$result['created']}");
+        $this->components->info("updated: {$result['updated']}");
+        $this->components->info("skipped: {$result['skipped']}");
         $this->components->info(__('plans::messages.sync_finished'));
 
         return self::SUCCESS;

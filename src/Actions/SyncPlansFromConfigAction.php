@@ -12,8 +12,11 @@ final readonly class SyncPlansFromConfigAction
         private PlanDefinitionSynchronizer $synchronizer,
     ) {}
 
-    public function handle(bool $deactivateMissing = false): void
+    /**
+     * @return array{created: int, updated: int, skipped: int}
+     */
+    public function handle(bool $deactivateMissing = false, ?bool $overwriteExisting = null): array
     {
-        $this->synchronizer->sync($deactivateMissing);
+        return $this->synchronizer->sync($deactivateMissing, $overwriteExisting);
     }
 }

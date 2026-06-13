@@ -64,8 +64,11 @@ final readonly class PlanManager
         return $this->inspector->syncAll();
     }
 
-    public function syncDefinitions(bool $deactivateMissing = false): void
+    /**
+     * @return array{created: int, updated: int, skipped: int}
+     */
+    public function syncDefinitions(bool $deactivateMissing = false, ?bool $overwriteExisting = null): array
     {
-        $this->definitions->sync($deactivateMissing);
+        return $this->definitions->sync($deactivateMissing, $overwriteExisting);
     }
 }

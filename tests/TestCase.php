@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace IvanBaric\Plans\Tests;
 
+use Illuminate\Foundation\Application;
 use IvanBaric\Plans\PlansServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
     /**
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      */
     protected function defineEnvironment($app): void
     {
@@ -24,7 +25,7 @@ abstract class TestCase extends Orchestra
     }
 
     /**
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      * @return array<int, class-string>
      */
     protected function getPackageProviders($app): array

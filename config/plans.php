@@ -1,6 +1,14 @@
 <?php
 
 declare(strict_types=1);
+use App\Resolvers\BillingResolver;
+use App\Resolvers\CurrentTeamResolver;
+use App\Resolvers\PlanUsageResolver;
+use IvanBaric\Plans\Models\EntitlementUsage;
+use IvanBaric\Plans\Models\PlanEntitlement;
+use IvanBaric\Plans\Models\PlanKey;
+use IvanBaric\Plans\Models\SubscriptionPlan;
+use IvanBaric\Plans\Services\DefaultCurrentPlanResolver;
 
 return [
 
@@ -20,21 +28,21 @@ return [
     ],
 
     'models' => [
-        'plan' => IvanBaric\Plans\Models\SubscriptionPlan::class,
-        'plan_key' => IvanBaric\Plans\Models\PlanKey::class,
-        'plan_entitlement' => IvanBaric\Plans\Models\PlanEntitlement::class,
-        'entitlement_usage' => IvanBaric\Plans\Models\EntitlementUsage::class,
+        'plan' => SubscriptionPlan::class,
+        'plan_key' => PlanKey::class,
+        'plan_entitlement' => PlanEntitlement::class,
+        'entitlement_usage' => EntitlementUsage::class,
     ],
 
     'resolvers' => [
-        'current_team' => App\Resolvers\CurrentTeamResolver::class,
-        'billing' => App\Resolvers\BillingResolver::class,
-        'usage' => App\Resolvers\PlanUsageResolver::class,
+        'current_team' => CurrentTeamResolver::class,
+        'billing' => BillingResolver::class,
+        'usage' => PlanUsageResolver::class,
     ],
 
     'billing' => [
         'plan_column' => 'plan_code',
-        'resolver' => IvanBaric\Plans\Services\DefaultCurrentPlanResolver::class,
+        'resolver' => DefaultCurrentPlanResolver::class,
     ],
 
     'usage' => [

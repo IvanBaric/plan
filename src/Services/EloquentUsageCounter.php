@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IvanBaric\Plans\Services;
 
+use App\Models\QrMenuItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\DB;
@@ -31,8 +32,8 @@ final class EloquentUsageCounter implements UsageCounter
 
     public function countMenuItems(Model $billable): int
     {
-        if (class_exists(\App\Models\QrMenuItem::class) && Schema::hasTable('qr_menu_items')) {
-            return (int) \App\Models\QrMenuItem::query()
+        if (class_exists(QrMenuItem::class) && Schema::hasTable('qr_menu_items')) {
+            return (int) QrMenuItem::query()
                 ->where('team_id', $billable->getKey())
                 ->count();
         }
@@ -82,7 +83,7 @@ final class EloquentUsageCounter implements UsageCounter
 
         return (int) DB::table('media')
             ->whereIn('model_id', $itemIds)
-            ->where('model_type', \App\Models\QrMenuItem::class)
+            ->where('model_type', QrMenuItem::class)
             ->count();
     }
 

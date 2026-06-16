@@ -19,5 +19,7 @@ return [
     'sync_command_description' => 'Sinkronizira planove, plan keyeve i entitlemente iz config/plans.php.',
     'install_command_description' => 'Instalira plans package.',
     'sync_finished' => 'Planovi su uspješno sinkronizirani.',
+    'usage_synced' => 'Korištenje plana je zabilježeno.',
+    'usage_reset' => 'Korištenje plana je resetirano.',
     'install_finished' => 'Plans package je uspješno instaliran.',
 ];

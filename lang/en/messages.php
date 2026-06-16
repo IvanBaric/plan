@@ -19,5 +19,7 @@ return [
     'sync_command_description' => 'Sync plans, plan keys and entitlements from config/plans.php.',
     'install_command_description' => 'Install the plans package.',
     'sync_finished' => 'Plans synced successfully.',
+    'usage_synced' => 'Plan usage recorded.',
+    'usage_reset' => 'Plan usage reset.',
     'install_finished' => 'Plans package installed successfully.',
 ];

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 use App\Resolvers\BillingResolver;
-use App\Resolvers\CurrentTeamResolver;
 use App\Resolvers\PlanUsageResolver;
+use IvanBaric\Plans\Resolvers\CorexisCurrentTeamResolver;
 use IvanBaric\Plans\Models\EntitlementUsage;
 use IvanBaric\Plans\Models\PlanEntitlement;
 use IvanBaric\Plans\Models\PlanKey;
@@ -35,7 +35,7 @@ return [
     ],
 
     'resolvers' => [
-        'current_team' => CurrentTeamResolver::class,
+        'current_team' => CorexisCurrentTeamResolver::class,
         'billing' => BillingResolver::class,
         'usage' => PlanUsageResolver::class,
     ],
@@ -113,6 +113,23 @@ return [
         'route_name_prefix' => 'admin.plans.',
         'middleware' => ['web', 'auth', 'admin_locale', 'is_superadmin'],
         'layout' => 'components.layouts.app',
+    ],
+
+    'permissions' => [
+        [
+            'name' => 'plans',
+            'slug' => 'plans',
+            'label' => 'plans::permissions.group',
+            'description' => 'plans::permissions.description',
+            'icon' => 'badge-check',
+            'sort_order' => 100,
+            'items' => [
+                ['name' => 'View', 'slug' => 'view', 'code' => 'plans.view', 'label' => 'plans::permissions.view', 'sort_order' => 10],
+                ['name' => 'Manage', 'slug' => 'manage', 'code' => 'plans.manage', 'label' => 'plans::permissions.manage', 'sort_order' => 20],
+                ['name' => 'Record usage', 'slug' => 'usage_record', 'code' => 'plans.usage.record', 'label' => 'plans::permissions.usage_record', 'sort_order' => 30],
+                ['name' => 'Reset usage', 'slug' => 'usage_reset', 'code' => 'plans.usage.reset', 'label' => 'plans::permissions.usage_reset', 'sort_order' => 40],
+            ],
+        ],
     ],
 
     'translation' => [

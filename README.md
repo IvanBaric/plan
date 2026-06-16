@@ -4,6 +4,8 @@ SaaS plans, plan keys, entitlements, synced usage, and metered usage checks for 
 
 The package has no Livewire components, no Flux UI components, no payment provider logic, no billing emails, no plan key Enums, and no hardcoded application models in core code.
 
+Composer package name is `ivanbaric/plans`. In this monorepo the local directory is currently `packages/ivanbaric/plan`; do not treat that directory name as a public package rename.
+
 ## Installation
 
 ```bash
@@ -104,6 +106,31 @@ plan_entitlements
 ```
 
 It does not fill `entitlement_usages`. Usage rows are synced when the application calls `Plan::inspect()`, `Plan::sync()`, or `Plan::syncAll()`.
+
+## Architecture
+
+State-changing plan workflows follow the shared IvanBaric flow:
+
+```text
+Controller/Command/Package Code -> Action -> Corexis ActionResult -> Domain Event -> Listener
+```
+
+New standard Actions:
+
+- `SyncPlansAction`
+- `InspectPlanAccessAction`
+- `RecordPlanUsageAction`
+- `ResetPlanUsageAction`
+
+`SyncPlansFromConfigAction` remains available as the existing compatibility implementation and still returns the raw sync counts array.
+
+Domain events:
+
+- `PlansSynced`
+- `PlanUsageRecorded`
+- `PlanUsageReset`
+
+This package stays entitlement and business-rule focused. It does not create payment attempts, confirm providers, or own subscription payment lifecycle. Plan changes that depend on billing provider state should be handled by the billing or host application layer, then reflected through the configured resolvers.
 
 ## Config structure
 

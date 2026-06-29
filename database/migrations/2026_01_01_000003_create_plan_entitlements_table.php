@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create(config('plans.tables.plan_entitlements', 'plan_entitlements'), function (Blueprint $table): void {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('plan_id')
                 ->constrained(config('plans.tables.plans', 'plans'))
                 ->cascadeOnDelete();

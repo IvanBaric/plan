@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create(config('plans.tables.plan_keys', 'plan_keys'), function (Blueprint $table): void {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('key')->unique();
             $table->string('name_key')->nullable();
             $table->string('description_key')->nullable();

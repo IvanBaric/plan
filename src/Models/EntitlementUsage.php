@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 final class EntitlementUsage extends Model
 {
     protected $fillable = [
+        'uuid',
         'owner_type',
         'owner_id',
         'plan_key_id',
@@ -27,6 +30,15 @@ final class EntitlementUsage extends Model
         'period_ends_at' => 'datetime',
         'synced_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $usage): void {
+            if (Schema::hasColumn($usage->getTable(), 'uuid') && blank($usage->uuid)) {
+                $usage->uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     public function getTable(): string
     {

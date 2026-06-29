@@ -7,14 +7,26 @@ namespace IvanBaric\Plans\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 final class PlanEntitlement extends Model
 {
     protected $fillable = [
+        'uuid',
         'plan_id',
         'plan_key_id',
         'value',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $entitlement): void {
+            if (Schema::hasColumn($entitlement->getTable(), 'uuid') && blank($entitlement->uuid)) {
+                $entitlement->uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     public function getTable(): string
     {

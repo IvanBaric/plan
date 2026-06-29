@@ -66,6 +66,7 @@ final readonly class PlanDefinitionSynchronizer
 
             $planKey = PlanKey::query()
                 ->where('key', $key)
+                ->lockForUpdate()
                 ->first();
 
             if (! $planKey instanceof PlanKey) {
@@ -132,6 +133,7 @@ final readonly class PlanDefinitionSynchronizer
 
             $plan = SubscriptionPlan::query()
                 ->where('slug', $slug)
+                ->lockForUpdate()
                 ->first();
 
             if (! $plan instanceof SubscriptionPlan) {
@@ -169,6 +171,7 @@ final readonly class PlanDefinitionSynchronizer
                 $entitlement = PlanEntitlement::query()
                     ->where('plan_id', $plan->getKey())
                     ->where('plan_key_id', $keys[$key]->getKey())
+                    ->lockForUpdate()
                     ->first();
 
                 if (! $entitlement instanceof PlanEntitlement) {

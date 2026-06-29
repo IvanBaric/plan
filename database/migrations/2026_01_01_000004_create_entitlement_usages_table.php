@@ -12,6 +12,7 @@ return new class extends Migration
     {
         Schema::create(config('plans.tables.entitlement_usages', 'entitlement_usages'), function (Blueprint $table): void {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->morphs('owner');
             $table->foreignId('plan_key_id')
                 ->constrained(config('plans.tables.plan_keys', 'plan_keys'))

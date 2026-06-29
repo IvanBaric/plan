@@ -7,10 +7,13 @@ namespace IvanBaric\Plans\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 final class PlanKey extends Model
 {
     protected $fillable = [
+        'uuid',
         'key',
         'name_key',
         'description_key',
@@ -22,6 +25,15 @@ final class PlanKey extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $planKey): void {
+            if (Schema::hasColumn($planKey->getTable(), 'uuid') && blank($planKey->uuid)) {
+                $planKey->uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     public function getTable(): string
     {
